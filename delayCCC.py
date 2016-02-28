@@ -12,41 +12,19 @@ import cv2
 import matplotlib.pyplot as plt
 from copy import deepcopy
 import sys
+sys.path.append('./')  # where modules are
 
-
-# %% FUNCTIONS
-def findClosest(t, times, delayList):
-    '''
-    finds de indexes of the closest frames in the buffer and the weghts
-    needed to linearly combine those images pixels
-    '''
-    # times of frames measured from now
-    t0 = t-np.array(times)
-
-    # index of the buffered frames
-    # the index is where the element must be inserted to preserve order
-    # i.e. index 86 means that we're beteen frame 85 and 86.
-    # Set parametrs such that you never get values 0 or
-    # len(t0). Those extreme cases are not considered.
-    ind = np.searchsorted(t0[::-1], delayList)[::-1]
-#    wei =
-    return ind
-
-
-def delayedFrame(t, times, frames, delFrm, masks, delayList):
-    # indexes of frames to use
-    ind = findClosest(t, times, delayList)
-
-    for i in range(len(delayList)):
-        listInd = ind[i]
-        m = masks[i]
-        delFrm[m] = frames[listInd][m]
-
+from delayedFrame import delayedFrame
+from delayMasks import delayMasks
+from bufferLists import bufferLists
 
 # %% PARAMETERS
-c = 1  # speed of light in m/s
-d = 0.2  # distance to wall in m
-w = 1  # screen width in meters
+reduced = True  # flag to reduce video to half
+save = True  # save video
+onscreen = False  # to show images and plots
+c = 0.2  # speed of light in meters/second
+d = 2.5/10  # distance to wall in meters
+w = 1.3  # screen width in meters
 print "Speed of light", c, "m/s"
 print "Distance to wall", d, "m"
 print "Screen width", w, "m"
@@ -57,110 +35,122 @@ print "Screen width", w, "m"
 # using-opencv-and-python#2602410
 print "\nOpening camera"
 camera_index = 1
-cv2.namedWindow("Sin retraso")
+
+if onscreen:
+    cv2.namedWindow("Sin retraso")
+    cv2.namedWindow("Con retraso")
+
 vc = cv2.VideoCapture(camera_index)
 
 if vc.isOpened():  # try to get the first frame
     rval, frame = vc.read()
+    if reduced:
+        frame = cv2.pyrDown(frame)
 else:
     rval = False
     print "Unable to connect to camera"
     sys.exit()
 
-cv2.imshow("Sin retraso", frame)
+(width, height, channels) = np.shape(frame)
+
+if onscreen:
+    cv2.imshow("Sin retraso", frame)
+
 print "Opened camera", camera_index, rval
 
+# Video a guardar
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+outCR = cv2.VideoWriter('conRetraso.avi',
+                        fourcc,
+                        3.5,
+                        (height, width))
+outSR = cv2.VideoWriter('sinRetraso.avi',
+                        fourcc,
+                        3.5,
+                        (height, width))
 
 # %% CALCULATE DELAYS
 print "\nCalculating delays"
 # since frame rate is uneven we work with delay measured in seconds, not frames
-(he, wi, ch) = np.shape(frame)
 
-line = np.arange(-wi/2, wi/2, 1)
-col = np.arange(-he/2, he/2, 1)
-
-k = wi/w  # Conversion factor from meters to pixels
-hDist = np.array([line for i in range(0, he)])
-vDist = np.array([col for i in range(0, wi)]).T
-# delay in seconds for each pixel
-delay = np.sqrt(hDist**2 + vDist**2 + (d*k)**2) / (c*k)
-# round to 1e-3 sec, to reduce memory requirements
-delay = np.round(delay, decimals=3)
-maxDelay = 2*np.max(delay)  # how much time to buffer
+maxDelay, delayList, delay, masks = delayMasks(frame, w, d, c)
 
 # to check delay calculated properly (in seconds)
-plt.imshow(delay)
-# np.min(delay)
+if onscreen:
+    plt.imshow(delay)
 
-# %% LIST OF DELAYS
-delayList = deepcopy(delay)
-delayList = delayList.reshape(wi*he)
-delayList = np.sort(delayList)
-
-keep = delayList[:-1] != delayList[1:]
-delayList = delayList[1:][keep]
-delayList = np.flipud(delayList)  # descending, as times
-# masks for selectig appropiate pixels
-masks = [delay == de for de in delayList]
+np.min(delay), np.max(delay)
 print "Number of masks", len(masks)
 
 # %% BUFFER FIRST FRAMES FOR MAX DELAY
 print("\nBuffering first frames")
-# initialize list
-frames = list()
-times = list()
-
-rval, frame = vc.read()  # first rame
-t = tm.time()  # frame time
-frames.append(frame)
-times.append(t)
-
-rval, frame = vc.read()  # second rame
-t = tm.time()  # frame time
-frames.append(frame)
-times.append(t)
-
 # oldest frame has index 0 (first)
 # newest has index -1 (last)
-
-while(times[-1] - times[0] < maxDelay):
-    rval, frame = vc.read()  # new rame
-    t = tm.time()  # frame time
-    frames.append(frame)
-    times.append(t)
-#    print(t, times[-1], times[0])
+frames, times = bufferLists(vc, reduced, maxDelay)
+t = times[-1]  # last frame's time
 print "Buffer lists length", len(times), len(frames)
+
+
+# %% PLOT DELAYS
+if onscreen:
+    fig, axs = plt.subplots(1, 2, sharey=True)
+
+    ax = axs[0]
+    ax.plot(delayList, '.')
+    ax.set_title("delays")
+
+    ax = axs[1]
+    ax.plot(t-np.array(times), '.')
+    ax.set_title("times")
+
+    plt.show()
 
 # %% LOOP
 delFrm = deepcopy(frame)  # frame to modify
-cv2.namedWindow("Con retraso")
 print "Running main loop"
 while rval:
 
-    # CREATE DELAYED IMAGE
-    # GET NEW FRAM, UPDALE LISTS
-    print "Reading new frame"
+    # GET NEW FRAME, UPDALE LISTS
+    print "\n\nReading new frame"
     rval, frame = vc.read()  # new rame
+    if reduced:
+        frame = cv2.pyrDown(frame)
     t = tm.time()  # frame time
     frames.append(frame)
     times.append(t)
     # delete buffered frames if too old
-    if times[0] + maxDelay < t:
+    while times[0] + maxDelay < t:
         del times[0]
         del frames[0]
     print "Buffer lists length", len(times), len(frames)
+    print "Frame Rate", 1.0 / (t - times[-2])
 
     # CREATE DELAYED FRAME
     print "Creating delayed frame"
     delayedFrame(t, times, frames, delFrm, masks, delayList)
 
     # SHOW ONSCREEN
-    print "Showing onscreen"
-    cv2.imshow("Sin retraso", frame)
-    cv2.imshow("Con retraso", delFrm)
-    key = cv2.waitKey(20)
+    if onscreen:
+        print "Showing onscreen"
+        cv2.imshow("Sin retraso", frame)
+        cv2.imshow("Con retraso", delFrm)
+
+    # SAVE
+    if save:
+        # Se guarda el resultado
+        outSR.write(frame)
+        outCR.write(delFrm)
+
+    # STOP
+    key = cv2.waitKey(1)
     if key == 27:  # exit on ESC
         break
 
-cv2.destroyWindow("Con retraso")
-cv2.destroyWindow("Sin retraso")
+# %% CLOSE WINDOWS RELEASE VIDEO
+vc.release()
+outCR.release()
+outSR.release()
+
+if onscreen:
+    cv2.destroyWindow("Con retraso")
+    cv2.destroyWindow("Sin retraso")
