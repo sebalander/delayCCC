@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Editor de Spyder
+6 Mar 2016
 
-Este es un archivo temporal
+Runs the algorithm for online processing of CCC-like delayed video.
+
+@author: sebalander
 """
 
 # %% IMPORTS
@@ -19,6 +21,7 @@ from delayMasks import delayMasks
 from bufferLists import bufferLists
 
 # %% PARAMETERS
+camera_index = 1
 reduced = True  # flag to reduce video to half
 save = True  # save video
 onscreen = False  # to show images and plots
@@ -34,7 +37,6 @@ print "Screen width", w, "m"
 # http://stackoverflow.com/questions/2601194/displaying-a-webcam-feed-
 # using-opencv-and-python#2602410
 print "\nOpening camera"
-camera_index = 1
 
 if onscreen:
     cv2.namedWindow("Sin retraso")
@@ -60,11 +62,11 @@ print "Opened camera", camera_index, rval
 
 # Video a guardar
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
-outCR = cv2.VideoWriter('conRetraso.avi',
+outCR = cv2.VideoWriter('../conRetraso.avi',
                         fourcc,
                         3.5,
                         (height, width))
-outSR = cv2.VideoWriter('sinRetraso.avi',
+outSR = cv2.VideoWriter('../sinRetraso.avi',
                         fourcc,
                         3.5,
                         (height, width))
@@ -140,11 +142,6 @@ while rval:
         # Se guarda el resultado
         outSR.write(frame)
         outCR.write(delFrm)
-
-    # STOP
-    key = cv2.waitKey(1)
-    if key == 27:  # exit on ESC
-        break
 
 # %% CLOSE WINDOWS RELEASE VIDEO
 vc.release()

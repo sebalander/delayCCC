@@ -12,21 +12,20 @@ from copy import deepcopy
 
 
 # %% DECLARATION
-def delayMasks(frame, w, d, c):
+def delayMasks(frame, d, c):
     (he, wi, ch) = np.shape(frame)
 
     line = np.arange(-wi/2, wi/2, 1)
     col = np.arange(-he/2, he/2, 1)
 
-    k = wi/w  # Conversion factor from meters to pixels
     hDist = np.array([line for i in range(0, he)])
     vDist = np.array([col for i in range(0, wi)]).T
     # delay in seconds for each pixel
-    delay = np.sqrt(hDist**2 + vDist**2 + (d*k)**2) / (c*k)
-    # round to 100 values, to control memory requirements
+    delay = np.sqrt(hDist**2 + vDist**2 + d**2) / c
+    # round to 1000 values, to control memory requirements
     mi = np.min(delay)
     interval = np.max(delay) - mi
-    step = interval/100
+    step = interval/1000
     # set discreet steps
     delay = np.round((delay - mi) / step) * step + mi
     maxDelay = 1.2*np.max(delay)  # how much time to buffer
