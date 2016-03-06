@@ -2,6 +2,8 @@
 
 Se pone un retraso temporal a cada pixel de un video emulando el efecto de que la velocidad de la luz fuera mucho menor a lo que realmente es.
 
+For OpenCV3.0.0-rc1 and Python2.7.9
+
 Sebastián I. Arroyo - Feb 2016
 
 Descripción
