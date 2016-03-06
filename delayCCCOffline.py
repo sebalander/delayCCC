@@ -89,6 +89,8 @@ def delayMasksOff(frame, d, c):
 
     # masks for selectig appropiate pixels
     masks = [delay == de for de in delayList]
+    # correct for smallest delay
+    masks[-1] = delay <= delayList[-1]
 
     return maxDelay, delayList, delay, masks
 
