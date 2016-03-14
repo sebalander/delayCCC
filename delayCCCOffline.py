@@ -73,7 +73,7 @@ def delayMasksOff(frame, d, c):
     # round to 100 values, to control memory requirements
     mi = np.min(delay)
     interval = np.max(delay) - mi
-    step = interval/100
+    step = interval/1000  # to 1e3 beacause slowmo
     # set discreet steps
     delay = np.round((delay - mi) / step) * step + mi
     maxDelay = 1.2*np.max(delay)  # how much time to buffer

@@ -1,0 +1,267 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 9.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[      9730,        258]
+NotebookOptionsPosition[      9293,        240]
+NotebookOutlinePosition[      9637,        255]
+CellTagsIndexPosition[      9594,        252]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"*", "Fija", " ", "directorio", " ", "de", " ", "trabajo"}], 
+   "**)"}], "\[IndentingNewLine]", 
+  RowBox[{
+  "SetDirectory", "[", "\"\<C:\\\\Users\\\\W7\\\\Desktop\>\"", 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.6603803805459585`*^9, 3.6603804212776303`*^9}, {
+  3.6651486704321046`*^9, 3.665148684269896*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "*", "Lee", " ", "la", " ", "animaci\[OAcute]n", " ", "en", " ", "formato",
+     " ", "AVI", " ", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"ojo", "!"}], " ", "no", " ", "acepta", " ", "cualquier", " ", 
+      RowBox[{"codificaci\[OAcute]n", "/", "compresi\[OAcute]n"}]}], ")"}]}], 
+   "**)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"avi", "=", 
+     RowBox[{"Import", "[", 
+      RowBox[{"\"\<apple.avi\>\"", ",", "\"\<Data\>\""}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{
+     "*", "N\[UAcute]mero", " ", "de", " ", "cuadros", " ", "por", " ", 
+      "segundo"}], ",", " ", 
+     RowBox[{"proporcionado", " ", "por", " ", "el", " ", "usuario"}]}], 
+    "**)"}], "\[IndentingNewLine]", 
+   RowBox[{"fps", "=", "30"}], "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"*", "Determina"}], ",", " ", 
+     RowBox[{"del", " ", "AVI", " ", "cargado"}], ",", " ", 
+     RowBox[{
+     "el", " ", "n\[UAcute]mero", " ", "total", " ", "de", " ", "cuadros"}], 
+     ",", " ", 
+     RowBox[{
+     "alto", " ", "y", " ", "ancho", " ", "de", " ", "la", " ", "imagen"}]}], 
+    "**)"}], "\[IndentingNewLine]", 
+   RowBox[{"nfr", "=", 
+    RowBox[{"Length", "[", "avi", "]"}]}], "\[IndentingNewLine]", 
+   RowBox[{"nh", "=", 
+    RowBox[{"Length", "[", 
+     RowBox[{"avi", "[", 
+      RowBox[{"[", "1", "]"}], "]"}], "]"}]}], "\[IndentingNewLine]", 
+   RowBox[{"nw", "=", 
+    RowBox[{"Length", "[", 
+     RowBox[{"avi", "[", 
+      RowBox[{"[", 
+       RowBox[{"1", ",", "1"}], "]"}], "]"}], "]"}]}]}]}]], "Input",
+ CellChangeTimes->{{3.6603804258640385`*^9, 3.660380454318488*^9}, {
+   3.6603808242891207`*^9, 3.660380841005077*^9}, 3.660381637715646*^9, {
+   3.660401841266227*^9, 3.660401843635362*^9}, {3.665148696661605*^9, 
+   3.6651488514474583`*^9}, {3.665149124810094*^9, 3.6651491347146597`*^9}, {
+   3.665149286697353*^9, 3.665149288801473*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"*", "Define", " ", "el", " ", "retraso", " ", 
+     RowBox[{"temporal", ".", " ", "La"}], " ", "funci\[OAcute]n", " ", "de", 
+     " ", "delay", " ", 
+     RowBox[{"d", "[", "y", "]"}], " ", "debe", " ", "ser", " ", "siempre", 
+     " ", "no", " ", 
+     RowBox[{"negativa", ".", " ", "Est\[AAcute]"}], " ", "definida", " ", 
+     "para", " ", "0"}], "<", "y", "<", 
+    RowBox[{
+    "1", " ", "donde", " ", "0", " ", "es", " ", "el", " ", "borde", " ", 
+     "superior", " ", "de", " ", "la", " ", "imagen", " ", "y", " ", "1", " ",
+      "es", " ", "el", " ", "borde", " ", 
+     RowBox[{"inferior", ".", " ", "El"}], " ", "delay", " ", "est\[AAcute]", 
+     " ", "expresado", " ", "en", " ", 
+     RowBox[{"segundos", "."}]}]}], "**)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"d", "[", "y_", "]"}], ":=", 
+    RowBox[{"5", " ", 
+     RowBox[{"(", 
+      RowBox[{"1", "-", "y"}], ")"}]}]}], ";"}]}]], "Input",
+ CellChangeTimes->{{3.6603809855103416`*^9, 3.6603811734150896`*^9}, {
+   3.660381231441408*^9, 3.660381251486555*^9}, {3.6603821289277415`*^9, 
+   3.66038214760081*^9}, {3.660382856922265*^9, 3.6603828591713934`*^9}, 
+   3.6603829973012943`*^9, 3.6603833471893063`*^9, {3.6604018537429404`*^9, 
+   3.6604018564030924`*^9}, {3.660401945198171*^9, 3.660401947115281*^9}, {
+   3.6604019791711144`*^9, 3.660401979563137*^9}, {3.660402038242493*^9, 
+   3.660402038401502*^9}, {3.66040246374483*^9, 3.660402464993902*^9}, {
+   3.66040252020006*^9, 3.66040252039307*^9}, {3.660402717122323*^9, 
+   3.6604027172023277`*^9}, {3.6604035639587593`*^9, 3.660403564114768*^9}, {
+   3.6604036389910507`*^9, 3.6604036722289515`*^9}, {3.66514886721636*^9, 
+   3.6651488730786953`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "*", "Crea", " ", "uno", " ", "por", " ", "uno", " ", "los", " ", "nfr", 
+     " ", "cuadros", " ", "de", " ", "la", " ", "animaci\[OAcute]n", " ", 
+     "con", " ", "delay"}], ",", " ", 
+    RowBox[{"en", " ", "el", " ", "vector", " ", "avid"}], ",", " ", 
+    RowBox[{
+    "generando", " ", "cada", " ", "cuadro", " ", "l\[IAcute]nea", " ", "por",
+      " ", "l\[IAcute]nea"}]}], "**)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "*", "lnegra", " ", "es", " ", "la", " ", "l\[IAcute]nea", " ", "negra", 
+    " ", "con", " ", "la", " ", "que", " ", "se", " ", "rellenan", " ", "las",
+     " ", "l\[IAcute]neas", " ", "para", " ", "las", " ", "que", " ", "no", 
+    " ", "hay", " ", "datos"}], "**)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"avid", "=", 
+     RowBox[{"{", "}"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"lnegra", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "0", ",", "0"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", "1", ",", "nw"}], "}"}]}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"Do", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"imn", "=", 
+        RowBox[{"{", "}"}]}], ";", 
+       RowBox[{"Do", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"nd", "=", 
+            RowBox[{"Floor", "[", 
+             RowBox[{"fps", " ", 
+              RowBox[{"d", "[", 
+               RowBox[{"j", "/", "nh"}], "]"}]}], "]"}]}], ";", 
+           RowBox[{"ni", "=", 
+            RowBox[{"n", "-", "nd"}]}], ";", " ", 
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{"ni", "<", "1"}], ",", 
+             RowBox[{"imn", "=", 
+              RowBox[{"Join", "[", 
+               RowBox[{"imn", ",", 
+                RowBox[{"{", "lnegra", "}"}]}], "]"}]}], ",", 
+             RowBox[{"imn", "=", 
+              RowBox[{"Join", "[", 
+               RowBox[{"imn", ",", 
+                RowBox[{"{", 
+                 RowBox[{"avi", "[", 
+                  RowBox[{"[", 
+                   RowBox[{"ni", ",", "j"}], "]"}], "]"}], "}"}]}], "]"}]}]}],
+             "]"}]}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"j", ",", "1", ",", "nh"}], "}"}]}], "]"}], ";", 
+       RowBox[{"avid", "=", 
+        RowBox[{"Join", "[", 
+         RowBox[{"avid", ",", 
+          RowBox[{"{", "imn", "}"}]}], "]"}]}]}], "\[IndentingNewLine]", 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"n", ",", "1", ",", "nfr"}], "}"}]}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.6603812948070326`*^9, 3.660381566416568*^9}, {
+  3.6603816328403673`*^9, 3.6603816614240017`*^9}, {3.6603818113705783`*^9, 
+  3.660381829456613*^9}, {3.660381877903384*^9, 3.6603819731178303`*^9}, {
+  3.6603820419627676`*^9, 3.6603820645630603`*^9}, {3.660382300294428*^9, 
+  3.6603823109090347`*^9}, {3.6651489061875887`*^9, 3.6651490125816746`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "*", "Muestra", " ", "la", " ", "animaci\[OAcute]n", " ", "creada"}], 
+   "**)"}], "\[IndentingNewLine]", 
+  RowBox[{"ListAnimate", "[", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"Image", "[", 
+      RowBox[{
+       RowBox[{"avid", "[", 
+        RowBox[{"[", "i", "]"}], "]"}], ",", "\"\<Byte\>\""}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "1", ",", 
+       RowBox[{"Length", "[", "avid", "]"}]}], "}"}]}], "]"}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.660382287015668*^9, 3.6603822883537445`*^9}, 
+   3.6603823187984858`*^9, {3.6603841770792627`*^9, 3.660384199059701*^9}, {
+   3.665149026882492*^9, 3.6651490483347197`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "*", "Exporta", " ", "la", " ", "animaci\[OAcute]n", " ", "creada", " ", 
+    "en", " ", "formato", " ", "AVI"}], "**)"}], "\[IndentingNewLine]", 
+  RowBox[{"Export", "[", 
+   RowBox[{"\"\<appled.avi\>\"", ",", 
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{"Image", "[", 
+       RowBox[{
+        RowBox[{"avid", "[", 
+         RowBox[{"[", "i", "]"}], "]"}], ",", "\"\<Byte\>\""}], "]"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"i", ",", "1", ",", 
+        RowBox[{"Length", "[", "avid", "]"}]}], "}"}]}], "]"}]}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.6603805222258434`*^9, 3.6603805555757513`*^9}, {
+  3.660382397143967*^9, 3.6603823989530706`*^9}, {3.6604037563687644`*^9, 
+  3.660403757213813*^9}, {3.6651490525819626`*^9, 3.6651490636155934`*^9}}]
+},
+WindowSize->{1584, 765},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"9.0 for Microsoft Windows (64-bit) (November 20, 2012)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[557, 20, 390, 9, 72, "Input"],
+Cell[950, 31, 1993, 50, 172, "Input"],
+Cell[2946, 83, 1769, 34, 72, "Input"],
+Cell[4718, 119, 3022, 76, 132, "Input"],
+Cell[7743, 197, 716, 19, 52, "Input"],
+Cell[8462, 218, 827, 20, 52, "Input"]
+}
+]
+*)
+
+(* End of internal cache information *)

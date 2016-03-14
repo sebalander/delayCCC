@@ -19,17 +19,17 @@ from delayCCCOffline import delayMasksOff
 from delayCCCOffline import bufferListsOff
 
 # %% PARAMETERS
-videoPath = "maniquies15fps.avi"
+videoPath = "MVI_6795.MOV"
 reduced = False  # flag to reduce video to half
 save = True  # save video
 onscreen = True  # to show images and plots
 
-fps = 15  # video frame rate
-cm2pix = 5.5 / 16.3  # from cm to pixels
-tall = 480 * cm2pix  # height of a person in pixels
-d = 50  # distance to wall in pixels
+fps = 8 * 30  # video frame rate, "desired"
+m2pix = 320 / 2.0  # from m to pixels
+tall = 1.7 * m2pix  # height of a person in pixels
+d = 0.5 * m2pix  # distance to wall in pixels, real dist was 2.3m
 
-c = 250 / fps  # speed of light in pixels per frame
+c = 0.5 * m2pix / fps  # speed of light in pixels per frame
 print "Person height", tall, "pix"
 print "Distance to wall", d, "pix"
 print "Speed of light", c, "pix/frm"
@@ -61,10 +61,16 @@ print "Opened video", videoPath, rval
 
 # Video a guardar
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
-outCR = cv2.VideoWriter('maniquiesConRetraso.avi',
+
+outCR = cv2.VideoWriter('delayslowmo.avi',
                         fourcc,
-                        15.0,
+                        fps,
                         (width, height))
+# to correct for false fps
+realVD = cv2.VideoWriter('slowmoreal.avi',
+                         fourcc,
+                         fps,
+                         (width, height))
 
 # %% CALCULATE DELAYS
 print "\nCalculating delays"
@@ -160,6 +166,7 @@ while rval:
     if save:
         # Se guarda el resultado
         outCR.write(delFrm)
+        realVD.write(frame)
 
     # GET NEW FRAME, UPDATE LISTS
     rval, frame = vc.read()  # new rame
@@ -172,6 +179,7 @@ while rval:
 # %% CLOSE WINDOWS RELEASE VIDEO
 vc.release()
 outCR.release()
+realVD.release()
 
 if onscreen:
     cv2.destroyWindow("Con retraso")
