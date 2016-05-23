@@ -1,8 +1,25 @@
 # -*- coding: utf-8 -*-
 """
-6 Mar 2016
+This program applies a delay to the pixels of a video. The delay
+is designed so that the output video mimics (though a very simple model)
+what an observer should see if light were to travel at much lower speeds
+than in reality. This script calls the functions declared in
+delayCCCOffline.py.
 
-Runs the algorithm for online processing of CCC-like delayed video.
+Copyright (C) 2016 Sebastián I. Arroyo, email: seba.arroyo7@gmail.com.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 @author: sebalander
 """
@@ -17,6 +34,15 @@ import sys
 from delayCCCOffline import delayedFrameOff
 from delayCCCOffline import delayMasksOff
 from delayCCCOffline import bufferListsOff
+
+# %% LICENSE
+print("\
+delayCCC Copyright (C) 2016 seba.arroyo7@gmail.com\n\
+This program comes with ABSOLUTELY NO WARRANTY.\n\
+This is free software, and you are welcome to redistribute it under\n\
+the conditions of the GNU General Public License Version 3,\n\
+29 June 2007, <http://www.gnu.org/licenses/>.\
+")
 
 # %% PARAMETERS
 videoName = "videos/MVI_6801"
@@ -87,12 +113,6 @@ if onscreen:
     X, Y = np.meshgrid(x, y)
     CS = plt.contour(X, Y, delay, 10, colors='k')
 
-#    plt.imshow(delay)
-#    plt.title('Curvas de nivel del delay en [frames]')
-#    plt.xlabel("x coordinate in image [pixels]")
-#    plt.ylabel("y coordinate in image [pixels]")
-#    plt.show()
-
     plt.imshow(frame[:, :, ::-1])
     values = [3.6, 4, 6, 8, 10, 13, 17]
     CS = plt.contour(X, Y, delay, 10, colors='w', V=values)
@@ -113,7 +133,6 @@ frames, times = bufferListsOff(frame, maxDelay)
 t = times[-1]  # last frame's time
 print "Buffer lists length", len(times), len(frames)
 
-
 # %% PLOT DELAYS
 if onscreen:
     fig, axs = plt.subplots(1, 2, sharey=True)
@@ -131,7 +150,7 @@ if onscreen:
 
     plt.show()
 
-# %% LOOP
+# %% MAIN LOOP
 delFrm = deepcopy(frame)  # frame to modify
 print "Running main loop"
 while rval:
