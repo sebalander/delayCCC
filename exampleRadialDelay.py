@@ -14,9 +14,9 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 import sys
 
-from delayCCCOffline import delayedFrameOff
-from delayCCCOffline import delayMasksOff
-from delayCCCOffline import bufferListsOff
+from delayCCC import delayedFrameOff
+from delayCCC import delayMasksOff
+from delayCCC import bufferListsOff
 
 # %% PARAMETERS
 videoName = "videos/MVI_6801"
