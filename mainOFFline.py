@@ -19,13 +19,14 @@ from delayCCCOffline import delayMasksOff
 from delayCCCOffline import bufferListsOff
 
 # %% PARAMETERS
-videoPath = "MVI_6795.MOV"
+videoName = "videos/MVI_6801"
+ext = "MOV"
 reduced = False  # flag to reduce video to half
 save = True  # save video
 onscreen = True  # to show images and plots
 
-fps = 8 * 30  # video frame rate, "desired"
-m2pix = 320 / 2.0  # from m to pixels
+fps = 120  # video frame rate, "desired"
+m2pix = 2 * 320 / 2.0  # from m to pixels
 tall = 1.7 * m2pix  # height of a person in pixels
 d = 0.5 * m2pix  # distance to wall in pixels, real dist was 2.3m
 
@@ -41,7 +42,7 @@ if onscreen:
     cv2.namedWindow("Sin retraso")
     cv2.namedWindow("Con retraso")
 
-vc = cv2.VideoCapture(videoPath)
+vc = cv2.VideoCapture(videoName+'.'+ext)
 
 if vc.isOpened():  # try to get the first frame
     rval, frame = vc.read()
@@ -57,17 +58,17 @@ else:
 if onscreen:
     cv2.imshow("Sin retraso", frame)
 
-print "Opened video", videoPath, rval
+print "Opened video", videoName, rval
 
 # Video a guardar
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
 
-outCR = cv2.VideoWriter('delayslowmo.avi',
+outCR = cv2.VideoWriter(videoName+'delayed.avi',
                         fourcc,
                         fps,
                         (width, height))
 # to correct for false fps
-realVD = cv2.VideoWriter('slowmoreal.avi',
+realVD = cv2.VideoWriter(videoName+'real.avi',
                          fourcc,
                          fps,
                          (width, height))
