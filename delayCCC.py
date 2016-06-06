@@ -2,14 +2,22 @@
 """
 Created on Sun Mar  6 13:18:38 2016
 
-Functions for delaying video offline
+Functions to be called by mainOFFline.py.
 
-findClosestOff
-delayedFrameOff
-delayMasksOff
-bufferListsOff
+Copyright (C) 2016 Sebastián I. Arroyo, email: seba.arroyo7@gmail.com.
 
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 @author: sebalander
 """
@@ -43,6 +51,9 @@ def findClosestOff(t, times, delayList):
 
 # %% DECLARATION
 def delayedFrameOff(t, times, frames, delFrm, masks, delayList):
+    '''
+    Linearly interpolate between two adyacent frames to give a smoother output.
+    '''
     # indexes of frames to use and weights for linear combination
     indPos, wPos = findClosestOff(t, times, delayList)
 
