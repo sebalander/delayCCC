@@ -46,20 +46,22 @@ def horizontalMascaras(DT, fps, width, height):
     # vector con el retraso de cada fila en segundos.
     # fila 0 -> retraso DT
     # ultima fila -> retraso 0
+
     m = float(DT)/height  # pendiente de la recta
     heights = np.arange(height)  # indice de alturas
     retrasos =  DT - m * heights
-    
+
     # convierto a índices de frames
     retrasos = np.int16(retrasos * fps + 0.5)
+    retrasosLista = range(np.max(retrasos) + 1)
 
-    # convierto a una matriz de retraso cte dentro de cada fila
+    # convierto a una matriz con retraso cte dentro de cada fila
     retrasosMatrix = np.array([retrasos for i in range(width)]).T
-    
-    # lista de mascaras
-    mascaras = [retrasosMatrix == retr for retr in retrasos]
 
-    return retrasos, mascaras
+    # lista de mascaras
+    mascaras = [retrasosMatrix == retr for retr in retrasosLista]
+
+    return retrasosLista, mascaras
 
 
 ## %% DECLARATION
@@ -99,6 +101,12 @@ else:
     print "Unable to connect open video"
     sys.exit()
 
+# el primer frame ya fue leído, guardo son el primer indice
+listaDeFrames = list()
+indicesDeFrames = list()
+listaDeFrames.append(frame)
+indicesDeFrames.append(vc.get(1))
+
 width = int(vc.get(3))  # cv2.CV_CAP_PROP_FRAME_WIDTH)
 height = int(vc.get(4))  # cv2.CV_CAP_PROP_FRAME_HEIGHT)
 fps = vc.get(5) # cv2.CV_CAP_PROP_FPS)  # get video frame rate
@@ -119,24 +127,44 @@ outCR = cv2.VideoWriter(videoName+'delayed.avi',
                         (width, height))
 
 # %% CALCULO MASCARAS
-retrasos, mascaras = horizontalMascaras(DT, fps, width, height)
+retrasosLista, mascaras = horizontalMascaras(DT, fps, width, height)
 
-retrasoMaximo = np.max(retrasos)
+# %% REGLA GENERAL PARA PONER RETRASOS
+# se van giardando los frames leidos y sus índices del video
+# a medida que se escribe en el archivo de destino debe cumplirse
+# indices de frames leidos + retraso = indice de frame a generar
+# Para saber qué indice de frame leído hay que ir a buscar hacemos
+# indices de frames leidos = indice de frame a generar - retraso
+# a medida que se recorre la lista de retrasos
+
 
 # %% PRIMERA ETAPA, RELLENO DONDE FALTA AL PPIO
 # CV_CAP_PROP_POS_FRAMES =1
 
-# el primer frame ya fue generado
-while vc.get(1) <= retrasoMaximo:
-    frameGenerado = frame
+
+while outCR.get(1) <= retrasosLista[-1]:
+
+    # agrego un frame a la lista
+    agregoFrameALista(...)
+    # compongo frame (aca tambien se eliminan frames de la lista despeusd e usar)
+    # usar min y max para elegir adecuadametne los frames en caso de esstar en un extremo.
+    generaFrame(outCR.get(1),
+                mascaras, retrasosLista,
+                listaDeFrames, indicesDeFrames)
+
+
 
 # %% SEGUNDA ETAPA
 # CV_CAP_PROP_POS_FRAMES =1
 # CV_CAP_PROP_FRAME_COUNT =7
 
 while vc.get(1) <= vc.get(7) - retrasoMaximo:
-    frameGenerado = 
+    frameGenerado =
+
+
+
+
 
 # %% TERCERA ETAPA, RELLENO DONDE FALTA AL FINAL
 while vc.get() <= retrasoMaximo:
-    frameGenerado = 
+    frameGenerado =
