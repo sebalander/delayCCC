@@ -44,6 +44,15 @@ the conditions of the GNU General Public License Version 3,\n\
 29 June 2007, <http://www.gnu.org/licenses/>.\
 ")
 
+# %% LICENSE
+print("\
+delayCCC Copyright (C) 2016 seba.arroyo7@gmail.com\n\
+This program comes with ABSOLUTELY NO WARRANTY.\n\
+This is free software, and you are welcome to redistribute it under\n\
+the conditions of the GNU General Public License Version 3,\n\
+29 June 2007, <http://www.gnu.org/licenses/>.\
+")
+
 # %% PARAMETERS
 videoName = "videos/MVI_6801"
 ext = "MOV"
