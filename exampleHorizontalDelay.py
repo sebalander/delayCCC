@@ -20,7 +20,6 @@ CV_CAP_PROP_FRAME_COUNT =7,
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
-from copy import deepcopy
 import sys
 
 # %% DECLARATION
@@ -53,15 +52,20 @@ def horizontalMascaras(DT, fps, width, height):
 
     # convierto a índices de frames
     retrasos = np.int16(retrasos * fps + 0.5)
-    retrasosLista = range(np.max(retrasos) + 1)
+    retrasosLista = np.arange(np.max(retrasos) + 1)
 
     # convierto a una matriz con retraso cte dentro de cada fila
     retrasosMatrix = np.array([retrasos for i in range(width)]).T
 
-    # lista de mascaras
-    mascaras = [retrasosMatrix == retr for retr in retrasosLista]
+    # paso a que la mascara sea de tres canales y ordeno las dimensiones
+    # retrasosMatrix = np.array([retrasosMatrix, retrasosMatrix, retrasosMatrix])
+    # s = np.shape(retrasosMatrix)
+    # retrasosMatrix = retrasosMatrix.reshape([s[1],s[2],s[0]])
 
-    return retrasosLista, mascaras
+    # lista de mascaras
+    mascarasLista = [retrasosMatrix == retr for retr in retrasosLista]
+
+    return retrasosLista, mascarasLista
 
 
 ## %% DECLARATION
@@ -77,6 +81,32 @@ def horizontalMascaras(DT, fps, width, height):
 #    return frames, times
 
 
+# %% DECLARATION
+def actualizoListaDeFrames(listaDeFrames, indicesDeFrames, frame, vc, retrasoMax):
+    '''
+    agrega un frame al final de la lista
+    '''
+    listaDeFrames.append([frame])
+    indicesDeFrames = np.insert(indicesDeFrames,
+                                np.size(indicesDeFrames),
+                                vc.get(1))
+    # saco los frames viejos
+    indicesGuardar = np.int(indicesDeFrames + retrasoMax + 1 < np.max(indicesDeFrames))
+
+    return listaDeFrames[indicesGuardar], indicesDeFrames[indicesGuardar]
+
+## %% DECLARATION
+#def generaFrame(indiceActualSalida, mascaras, retrasosLista, listaDeFrames,
+#                indicesDeFrames):
+#    '''
+#    conpongo frame (aca tambien se eliminan frames de la lista despeus de usar)
+#    usar min y max para elegir adecuadametne los frames en caso de estar en un
+#    extremo.
+#    '''
+#
+#    # los tres regímenes:
+#    if indiceActualSalida <=
+
 # %% PARAMETROS
 videoName = "videos/apple"
 ext = "avi"
@@ -88,7 +118,7 @@ DT = 1;  # retraso de la parte inferior respecto a la superior en segundos. La
          # fila inferior se muestra sin retraso
 
 # %% ABRIR ARCHIVO DE VIDEO
-print "\nAbriendo archivo de video"
+print("\nAbriendo archivo de video")
 
 vc = cv2.VideoCapture(videoName+'.'+ext)
 
@@ -98,14 +128,12 @@ if vc.isOpened():  # intentar leer primer frame
         frame = cv2.pyrDown(frame)
 else:
     rval = False
-    print "Unable to connect open video"
+    print("Unable to connect open video")
     sys.exit()
 
-# el primer frame ya fue leído, guardo son el primer indice
-listaDeFrames = list()
-indicesDeFrames = list()
-listaDeFrames.append(frame)
-indicesDeFrames.append(vc.get(1))
+# lista para guardar los frames y array para los indices
+listaDeFrames = list([frame])
+indicesDeFrames = np.array(vc.get(1),dtype=int)
 
 width = int(vc.get(3))  # cv2.CV_CAP_PROP_FRAME_WIDTH)
 height = int(vc.get(4))  # cv2.CV_CAP_PROP_FRAME_HEIGHT)
@@ -116,7 +144,7 @@ if onscreen:
     cv2.namedWindow("Con retraso")
     cv2.imshow("Sin retraso", frame)
 
-print "Opened video", videoName, rval
+print("Opened video", videoName, rval)
 
 # Video a guardar
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
@@ -126,45 +154,63 @@ outCR = cv2.VideoWriter(videoName+'delayed.avi',
                         fps,
                         (width, height))
 
-# %% CALCULO MASCARAS
-retrasosLista, mascaras = horizontalMascaras(DT, fps, width, height)
-
+# %% CALCULO MASCARAS Y LOS RETRASOS ASOCIADOS
+retrasosLista, mascarasLista = horizontalMascaras(DT, fps, width, height)
+retrasoMax = np.max(retrasosLista)
 # %% REGLA GENERAL PARA PONER RETRASOS
-# se van giardando los frames leidos y sus índices del video
+# se van guardando los frames leidos y sus índices del video
 # a medida que se escribe en el archivo de destino debe cumplirse
 # indices de frames leidos + retraso = indice de frame a generar
 # Para saber qué indice de frame leído hay que ir a buscar hacemos
 # indices de frames leidos = indice de frame a generar - retraso
 # a medida que se recorre la lista de retrasos
 
-
-# %% PRIMERA ETAPA, RELLENO DONDE FALTA AL PPIO
 # CV_CAP_PROP_POS_FRAMES =1
 
+nFrames = vc.get(7) + retrasoMax
 
-while outCR.get(1) <= retrasosLista[-1]:
+# %%
+while outCR.get(1) <= nFrames:
+    
+    rval, frame = vc.read()
+    # actualizo lista de frames con un onuevo
+    listaDeFrames, indicesDeFrames = actualizoListaDeFrames(listaDeFrames,
+                                                            indicesDeFrames,
+                                                            frame,
+                                                            vc,
+                                                            retrasoMax)
 
-    # agrego un frame a la lista
-    agregoFrameALista(...)
     # compongo frame (aca tambien se eliminan frames de la lista despeusd e usar)
     # usar min y max para elegir adecuadametne los frames en caso de esstar en un extremo.
-    generaFrame(outCR.get(1),
-                mascaras, retrasosLista,
-                listaDeFrames, indicesDeFrames)
+    indiceActualSalida = np.int(outCR.get(1) + 1)  # indice del frame a generar
+
+    framesParaCadaMascara = indiceActualSalida - retrasosLista
+    # rectifico para que este dentro del rango de frames disponibles
+    indiceMinimo = np.min(indicesDeFrames)
+    indiceMaximo = np.max(indicesDeFrames)
+    framesParaCadaMascara[framesParaCadaMascara < indiceMinimo] = indiceMinimo
+    framesParaCadaMascara[indiceMaximo < framesParaCadaMascara] = indiceMaximo
+
+    # lo convierto a los índices
+    indicesDeFramesParaMascara = [np.where(indicesDeFrames==frm)[0][0] for frm in framesParaCadaMascara]
+    frameGenerado = frame.copy()
+    
+    for i, masc in enumerate(mascarasLista):
+        indiceFrameElegido = indicesDeFramesParaMascara[i]
+        frameElegido = listaDeFrames[indiceFrameElegido]
+        frameGenerado[masc] = frameElegido[masc]
+
+    outCR.write(frameGenerado)
+    if onscreen:
+        cv2.imshow("Con retraso", frameGenerado)
+        cv2.imshow("Sin retraso", frame)
 
 
+# %% CLOSE WINDOWS RELEASE VIDEO
+vc.release()
+outCR.release()
 
-# %% SEGUNDA ETAPA
-# CV_CAP_PROP_POS_FRAMES =1
-# CV_CAP_PROP_FRAME_COUNT =7
+if onscreen:
+    cv2.destroyWindow("Con retraso")
+    cv2.destroyWindow("Sin retraso")
 
-while vc.get(1) <= vc.get(7) - retrasoMaximo:
-    frameGenerado =
-
-
-
-
-
-# %% TERCERA ETAPA, RELLENO DONDE FALTA AL FINAL
-while vc.get() <= retrasoMaximo:
-    frameGenerado =
