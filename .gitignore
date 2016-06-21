@@ -61,7 +61,7 @@ target/
 #Ipython Notebook
 .ipynb_checkpoints
 
-# Other
+# Others, arbitrary selection - sebalander
 *.pyc
 *.avi
 *.png
@@ -69,3 +69,7 @@ target/
 *.mp4
 *.jpg
 *online*
+avi-apple.nb
+delayCCC.py
+exampleRadialDelay.py
+fig/*

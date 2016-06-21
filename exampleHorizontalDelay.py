@@ -1,20 +1,23 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jun  2 09:44:55 2016
+Este script agrega retraso temporal a cada fila de pixeles de un video.
 
-Agrega retraso temporal a cada fila de pixeles de un video.
+Copyright 2016 Sebastian I. Arroyo
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 @author: sebalander
-
-indices para usa en la funcion get():
-CV_CAP_PROP_POS_MSEC =0,
-CV_CAP_PROP_POS_FRAMES =1,
-CV_CAP_PROP_FRAME_WIDTH =3,
-CV_CAP_PROP_FRAME_HEIGHT =4,
-CV_CAP_PROP_FPS =5,
-CV_CAP_PROP_FOURCC =6,
-CV_CAP_PROP_FRAME_COUNT =7,
-
 """
 # %% IMPORTS
 import numpy as np
@@ -22,21 +25,6 @@ import cv2
 import matplotlib.pyplot as plt
 import sys
 
-# %% DECLARATION
-#def delayedFrameOff(t, times, frames, delFrm, masks, delayList):
-#    # indexes of frames to use and weights for linear combination
-#    indPos, wPos = findClosestOff(t, times, delayList)
-#
-#    for i in range(len(delayList)):
-#        ind = indPos[i]
-#        w = wPos[i]
-#        m = masks[i]
-#        frmPos = frames[ind]
-#        frmPre = frames[ind - 1]
-#        # linear combination
-#        delFrm[m] = np.uint8(w * frmPos[m] + (1 - w) * frmPre[m])
-#
-#
 # %% DECLARACION
 def horizontalMascaras(DT, fps, width, height):
     '''
@@ -68,19 +56,6 @@ def horizontalMascaras(DT, fps, width, height):
     return retrasosLista, mascarasLista
 
 
-## %% DECLARATION
-#def bufferListsOff(frame, maxDelay):
-#    '''
-#    make a list of the fist frames to use
-#    '''
-#    times = range(int(maxDelay)+2)
-#
-#    # just repeat the first frame many times
-#    frames = list([deepcopy(frame) for i in range(len(times))])
-#
-#    return frames, times
-
-
 # %% DECLARATION
 def actualizoListaDeFrames(listaDeFrames, indicesDeFrames, frame, vc, retrasoMax):
     '''
@@ -94,18 +69,6 @@ def actualizoListaDeFrames(listaDeFrames, indicesDeFrames, frame, vc, retrasoMax
     indicesGuardar = np.int(indicesDeFrames + retrasoMax + 1 < np.max(indicesDeFrames))
 
     return listaDeFrames[indicesGuardar], indicesDeFrames[indicesGuardar]
-
-## %% DECLARATION
-#def generaFrame(indiceActualSalida, mascaras, retrasosLista, listaDeFrames,
-#                indicesDeFrames):
-#    '''
-#    conpongo frame (aca tambien se eliminan frames de la lista despeus de usar)
-#    usar min y max para elegir adecuadametne los frames en caso de estar en un
-#    extremo.
-#    '''
-#
-#    # los tres regímenes:
-#    if indiceActualSalida <=
 
 # %% PARAMETROS
 videoName = "videos/apple"
@@ -134,6 +97,18 @@ else:
 # lista para guardar los frames y array para los indices
 listaDeFrames = list([frame])
 indicesDeFrames = np.array(vc.get(1),dtype=int)
+
+'''
+indices para usa en la funcion get():
+CV_CAP_PROP_POS_MSEC =0,
+CV_CAP_PROP_POS_FRAMES =1,
+CV_CAP_PROP_FRAME_WIDTH =3,
+CV_CAP_PROP_FRAME_HEIGHT =4,
+CV_CAP_PROP_FPS =5,
+CV_CAP_PROP_FOURCC =6,
+CV_CAP_PROP_FRAME_COUNT =7,
+
+'''
 
 width = int(vc.get(3))  # cv2.CV_CAP_PROP_FRAME_WIDTH)
 height = int(vc.get(4))  # cv2.CV_CAP_PROP_FRAME_HEIGHT)

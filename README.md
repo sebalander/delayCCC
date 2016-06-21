@@ -1,6 +1,6 @@
 # delayCCC
 
-Se pone un retraso temporal a cada pixel de un video emulando el efecto de que la velocidad de la luz fuera mucho menor a lo que realmente es.
+Se pone un retraso temporal a cada pixel de un video para crear un video donde las imagenes se mueven más rapido que la luz.
 
 For OpenCV3.0.0-rc1 and Python2.7.9
 
@@ -8,13 +8,12 @@ Sebastián I. Arroyo - Mayo 2016
 
 Archivos
 --------
-- mainOFFline.py : script principal/main.
-- delayCCCOffline.py : funciones que usa el script princial.
+- exampleHorizontalDelay.py : script que procesa el video.
 - LICENSE : Licencia que rige sobre este software: GNU GPLv3.
 
 Descripción
 -----------
-Se levanta video de una webcam y los fotogramas se almacenan en un buffer. En lugar de mostrar la imagen tomada por la camara se muestra una imagen sintética a partir de los frames guardados en buffer. Esta imagen se contruye tomando selectivamente los pixeles de los fotogramas guardados en buffer. El criterio para seleccinar qué pixeles se toman de cada fotograma relaciona la posición del pixel en la imagen con el tiempo que lleva el fotograma en el buffer. En concreto tau = sqrt(r^2 + d^2)/c. tau es el retardo temporal asociado al pixel, r es la distancia del pixel al centro de la imagen y d es la distancia de la camara al plano donde se mueven los objetos.
+Se lee un video de un archivo y a medida que se leen los fotogramas se va generando un video donde las filas horizontales de pixeles tienen un retraso tempral respecto al video original. El retraso es máximo en la fila de arriba y cero en la fila de abajo y va lineal con la altura en la imagen.
 
 Para ver un ejemplo del resultado: https://www.youtube.com/watch?v=4IFmES5uJXQ
 
