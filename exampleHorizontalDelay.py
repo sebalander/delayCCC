@@ -61,14 +61,15 @@ def actualizoListaDeFrames(listaDeFrames, indicesDeFrames, frame, vc, retrasoMax
     '''
     agrega un frame al final de la lista
     '''
-    listaDeFrames.append([frame])
+    listaDeFrames = np.append(listaDeFrames, [frame], axis=0);
     indicesDeFrames = np.insert(indicesDeFrames,
                                 np.size(indicesDeFrames),
                                 vc.get(1))
     # saco los frames viejos
-    indicesGuardar = np.int(indicesDeFrames + retrasoMax + 1 < np.max(indicesDeFrames))
+    indicesGuardar = indicesDeFrames + retrasoMax + 1 > np.max(indicesDeFrames)
 
-    return listaDeFrames[indicesGuardar], indicesDeFrames[indicesGuardar]
+    return listaDeFrames[indicesGuardar], \
+           indicesDeFrames[indicesGuardar]
 
 # %% PARAMETROS
 videoName = "videos/apple"
@@ -95,7 +96,7 @@ else:
     sys.exit()
 
 # lista para guardar los frames y array para los indices
-listaDeFrames = list([frame])
+listaDeFrames = np.array([frame])
 indicesDeFrames = np.array(vc.get(1),dtype=int)
 
 '''
@@ -148,6 +149,9 @@ nFrames = vc.get(7) + retrasoMax
 while outCR.get(1) <= nFrames:
     
     rval, frame = vc.read()
+    if not rval:
+        break
+
     # actualizo lista de frames con un onuevo
     listaDeFrames, indicesDeFrames = actualizoListaDeFrames(listaDeFrames,
                                                             indicesDeFrames,
@@ -169,13 +173,15 @@ while outCR.get(1) <= nFrames:
     # lo convierto a los índices
     indicesDeFramesParaMascara = [np.where(indicesDeFrames==frm)[0][0] for frm in framesParaCadaMascara]
     frameGenerado = frame.copy()
-    
+    print("leyendo frame %d; generando frame %d"%(vc.get(1), outCR.get(1)))
+
     for i, masc in enumerate(mascarasLista):
         indiceFrameElegido = indicesDeFramesParaMascara[i]
         frameElegido = listaDeFrames[indiceFrameElegido]
         frameGenerado[masc] = frameElegido[masc]
 
     outCR.write(frameGenerado)
+    
     if onscreen:
         cv2.imshow("Con retraso", frameGenerado)
         cv2.imshow("Sin retraso", frame)
