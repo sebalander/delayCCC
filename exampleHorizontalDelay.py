@@ -28,7 +28,7 @@ import sys
 videoName = "videos/apple"
 ext = "avi"
 
-DT = 7;  # retraso de la parte inferior respecto a la superior en segundos. La
+DT = 3;  # retraso de la parte inferior respecto a la superior en segundos. La
          # fila inferior se muestra sin retraso
 
 # %% ABRIR ARCHIVO DE VIDEO
@@ -69,7 +69,7 @@ print("Opened video", videoName, rval)
 # Video a guardar
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
 
-outCR = cv2.VideoWriter(videoName+'delayed'+DT+'s.avi',
+outCR = cv2.VideoWriter(videoName+'delayed'+str(DT)+'s.avi',
                         fourcc,
                         fps,
                         (width, height))
@@ -128,12 +128,12 @@ while rval:
 
     # lo convierto a los índices
     indicesDeFramesParaMascara = [np.where(indicesDeFrames==frm)[0][0]
-                                    for frm in framesParaCadaMascara]:
+                                    for frm in framesParaCadaMascara]
                                         
     print("Procesando frame %d"%nFrm)
     frameGenerado = frame.copy()
     for i, ret in enumerate(retrasosLista):
-        filasAAplicar = retrasos==ret  # podría modificarse el codigo
+        filasAAplicar = retrasos==ret  # podría modificarse el codsigo
                                        # para que esta cuenta se haga
                                        # una sola vez al ppio
         frameACopiar = listaDeFrames[indicesDeFramesParaMascara[i]]
@@ -169,7 +169,7 @@ while len(listaDeFrames)-1:
 
     # lo convierto a los índices
     indicesDeFramesParaMascara = [np.where(indicesDeFrames==frm)[0][0]
-                                    for frm in framesParaCadaMascara]:
+                                    for frm in framesParaCadaMascara]
                                         
     print("Procesando frame %d"%nFrm)
     for i, ret in enumerate(retrasosLista):
