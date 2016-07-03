@@ -15,7 +15,7 @@ Descripción
 -----------
 A medida que se leen los fotogramas de un video se va generando un otro video donde las filas horizontales de pixeles tienen un retraso tempral respecto al video original. El retraso es máximo en la fila de arriba y cero en la fila de abajo y va lineal con la altura en la imagen.
 
-Para ver un ejemplo del resultado: https://www.youtube.com/watch?v=Z8wVxEE5J6Q&feature=youtu.be
+Para ver un ejemplo del resultado: https://youtu.be/MGxF9RpKD78
 
 CCC
 ---
