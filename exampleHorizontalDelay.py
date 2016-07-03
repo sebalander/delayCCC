@@ -27,9 +27,6 @@ import sys
 # %% PARAMETROS
 videoName = "videos/apple"
 ext = "avi"
-reduced = False  # flag para reducir el video a la mitad te tamaño
-save = True  # flag para guardar video
-onscreen = True  # flag para mostrar resultados en pantalla
 
 DT = 7;  # retraso de la parte inferior respecto a la superior en segundos. La
          # fila inferior se muestra sin retraso
@@ -41,8 +38,7 @@ vc = cv2.VideoCapture(videoName+'.'+ext)
 
 if vc.isOpened():  # intentar leer primer frame
     rval, frame = vc.read()
-    if reduced:
-        frame = cv2.pyrDown(frame)
+
 else:
     rval = False
     print("Unable to connect open video")
@@ -68,17 +64,12 @@ width = int(vc.get(3))  # cv2.CV_CAP_PROP_FRAME_WIDTH)
 height = int(vc.get(4))  # cv2.CV_CAP_PROP_FRAME_HEIGHT)
 fps = vc.get(5) # cv2.CV_CAP_PROP_FPS)  # get video frame rate
 
-if onscreen:
-    cv2.namedWindow("Sin retraso")
-    cv2.namedWindow("Con retraso")
-    cv2.imshow("Sin retraso", frame)
-
 print("Opened video", videoName, rval)
 
 # Video a guardar
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
 
-outCR = cv2.VideoWriter(videoName+'delayed.avi',
+outCR = cv2.VideoWriter(videoName+'delayed'+DT+'s.avi',
                         fourcc,
                         fps,
                         (width, height))
@@ -112,6 +103,7 @@ nFrm = 0
 while rval:
     nFrm = vc.get(1)    
     
+    # agrego nuevo frame al buffer
     listaDeFrames = np.append(listaDeFrames, [frame], axis=0);
     indicesDeFrames = np.insert(indicesDeFrames,
                                 np.size(indicesDeFrames),
@@ -120,14 +112,14 @@ while rval:
     indicesGuardar = indicesDeFrames + retrasoMax > nFrm
     listaDeFrames = listaDeFrames[indicesGuardar]
     indicesDeFrames = indicesDeFrames[indicesGuardar]
-    print("frames grardados",len(listaDeFrames))
+    print("frames guardados en buffer",len(listaDeFrames))
 
 
     # compongo frame (aca tambien se eliminan frames de la lista despeus de usar)
-    # usar min y max para elegir adecuadametne los frames en caso de estar en un extremo.
     indiceActualSalida = np.int(nFrm)  # indice del frame a generar
-
     framesParaCadaMascara = indiceActualSalida - retrasosLista
+    
+    # usar min y max para elegir adecuadametne los frames en caso de estar en un extremo.
     # rectifico para que este dentro del rango de frames disponibles
     indiceMinimo = np.min(indicesDeFrames)
     indiceMaximo = np.max(indicesDeFrames)
@@ -136,7 +128,8 @@ while rval:
 
     # lo convierto a los índices
     indicesDeFramesParaMascara = [np.where(indicesDeFrames==frm)[0][0]
-                                    for frm in framesParaCadaMascara]
+                                    for frm in framesParaCadaMascara]:
+                                        
     print("Procesando frame %d"%nFrm)
     frameGenerado = frame.copy()
     for i, ret in enumerate(retrasosLista):
@@ -160,14 +153,14 @@ while len(listaDeFrames)-1:
     indicesGuardar = indicesDeFrames + retrasoMax > nFrm
     listaDeFrames = listaDeFrames[indicesGuardar]
     indicesDeFrames = indicesDeFrames[indicesGuardar]
-    print("frames grardados",len(listaDeFrames))
+    print("frames guardados en buffer",len(listaDeFrames))
 
 
     # compongo frame (aca tambien se eliminan frames de la lista despeus de usar)
-    # usar min y max para elegir adecuadametne los frames en caso de estar en un extremo.
     indiceActualSalida = np.int(nFrm)  # indice del frame a generar
-
     framesParaCadaMascara = indiceActualSalida - retrasosLista
+
+    # usar min y max para elegir adecuadametne los frames en caso de estar en un extremo.
     # rectifico para que este dentro del rango de frames disponibles
     indiceMinimo = np.min(indicesDeFrames)
     indiceMaximo = np.max(indicesDeFrames)
@@ -176,9 +169,9 @@ while len(listaDeFrames)-1:
 
     # lo convierto a los índices
     indicesDeFramesParaMascara = [np.where(indicesDeFrames==frm)[0][0]
-                                    for frm in framesParaCadaMascara]
+                                    for frm in framesParaCadaMascara]:
+                                        
     print("Procesando frame %d"%nFrm)
-#    frameGenerado = frame.copy()
     for i, ret in enumerate(retrasosLista):
         filasAAplicar = retrasos==ret  # podría modificarse el codigo
                                        # para que esta cuenta se haga
@@ -193,7 +186,4 @@ while len(listaDeFrames)-1:
 vc.release()
 outCR.release()
 
-if onscreen:
-    cv2.destroyWindow("Con retraso")
-    cv2.destroyWindow("Sin retraso")
 
